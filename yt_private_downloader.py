@@ -2,10 +2,15 @@ import json
 import re
 import asyncio
 import urllib.request
+import progressbar
 from urllib.error import URLError, HTTPError
+
 
 file_route = input("ruta del archivo con el source:\n")
 file_quality = input("Calidad a descargar:\n")
+
+#variable que sera utilizada para inicializar una barra de progreso.
+progress_bar = None
 
 async def searchQuality( _qualityString, _jsonObj ):
     """
@@ -103,11 +108,46 @@ async def downloadFile( _url, _videoName, _videoExtension ):
         None.
     """
     try:
-        urllib.request.urlretrieve(str(_url), str(_videoName)+'.'+str(_videoExtension))
+        print( "Descargando: " + str(_videoName) +"\n" )
+        urllib.request.urlretrieve(str(_url), str(_videoName) + '.' + str(_videoExtension ), showProgress)
     except HTTPError as e:
         print( e )
     except URLError as e:
         print( e )
+
+def showProgress(_blockNum, _blockSize, _totalSize):
+    """
+    Funcion encargada de generar una barra de progreso durante la descarga.
+    
+    Params:
+        { Integer }  _blockNum:   Numero de bloques proveniente de urlretrieve.
+        { Integer }  _blockSize:  Tamanio del bloque de descarga proveniente de urlretrieve.
+        { Integer }  _totalSize:  Tamanio total del archivo a descargar proveniente de urlretrieve.
+        
+        
+    Returns:
+        None.
+    """
+    #utilizamos la variable global.
+    global progress_bar
+    #si la variable aun no esta en uso
+    if progress_bar is None:
+        #creamos una instancia de progressBar
+        progress_bar = progressbar.ProgressBar(maxval=_totalSize)
+        #la inicializamos
+        progress_bar.start()
+
+    #obtenemos el total de descarga en base al peso total y el descargado.
+    downloaded = _blockNum * _blockSize
+    #si aun no se completa la descarga
+    if downloaded < _totalSize:
+        #actualizamos la instancia del progressBar
+        progress_bar.update(downloaded)
+    #si la descarga ha finalziado
+    else:
+        #finalizamos la instancia de progressBar
+        progress_bar.finish()
+        progress_bar = None
 
 def saveIntoFile( _json, _route ):
     """
@@ -156,6 +196,3 @@ async def main():
 
 
 asyncio.run(main())
-    
-    
-    
