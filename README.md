@@ -2,17 +2,17 @@
 Script beta para descargar videos privados de yt
 
 
-#Requeriments
+# Requeriments
 python 3+
 asyncio             pip install asyncio
 progressbar         pip install progressbar
 
 
-#Usage
+# Usage
 Necesita de un archivo que contenga el Source Code del video a descargar,
 para obtener dicho Source Code es necesario ir a la pagina del video y presionar Ctrl + U y guardar todo el contenido que se muestre.
 
-#Quality
+# Quality
 hd1080
 720p
 480p
